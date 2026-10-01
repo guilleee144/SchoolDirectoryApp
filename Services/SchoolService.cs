@@ -1,0 +1,16 @@
+﻿using SchoolDirectoryApp.Models;
+
+namespace SchoolDirectoryApp.Services;
+
+public class SchoolService : ISchoolService
+{
+    private readonly HttpClient _http;
+
+    public SchoolService(HttpClient http) => _http = http;
+
+    public async Task<List<School>> GetSchoolsAsync(CancellationToken cancellationToken = default)
+    {
+        var schools = await _http.GetFromJsonAsync<List<School>>("api/school", cancellationToken);
+        return schools ?? new List<School>();
+    }
+}
