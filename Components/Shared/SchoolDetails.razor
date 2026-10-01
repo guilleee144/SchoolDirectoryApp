@@ -1,0 +1,24 @@
+﻿@using SchoolDirectoryApp.Models
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">@School.SchoolName</h4>
+        <button class="btn btn-sm btn-outline-secondary" @onclick="OnClose">Close</button>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item"><strong>School ID:</strong> @School.SchoolId</li>
+        <li class="list-group-item"><strong>Address:</strong> @School.Address</li>
+        <li class="list-group-item"><strong>Phone:</strong> @School.PhoneNo</li>
+        <li class="list-group-item"><strong>Email:</strong> @School.EmailAddress</li>
+        <li class="list-group-item"><strong>Proprietor:</strong> @School.ProprietorFullName</li>
+        <li class="list-group-item"><strong>Head:</strong> @School.HeadFullName</li>
+    </ul>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public School School { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+}

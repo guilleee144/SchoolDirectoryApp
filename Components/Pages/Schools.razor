@@ -1,0 +1,86 @@
+﻿@page "/"
+@page "/schools"
+@using SchoolDirectoryApp.Models
+@using SchoolDirectoryApp.Services
+@using SchoolDirectoryApp.Components.Shared
+@inject ISchoolService SchoolService
+
+<PageTitle>School Directory</PageTitle>
+
+<h1 class="mb-3">School Directory</h1>
+
+<input @bind="Search"
+       @bind:event="oninput"
+       class="form-control mb-4"
+       placeholder="Search school..." />
+
+@if (error)
+{
+    <div class="alert alert-danger">
+        <p class="text-danger mb-2">Unable to retrieve school data.</p>
+        <button class="btn btn-sm btn-danger" @onclick="LoadSchools">Try again</button>
+    </div>
+}
+else if (schools == null)
+{
+    <p>Loading schools...</p>
+}
+else
+{
+    <div class="row">
+        <div class="@(selected == null ? "col-12" : "col-lg-7")">
+            @if (!FilteredSchools.Any())
+            {
+                <p class="text-muted">No schools match "@Search".</p>
+            }
+            <div class="row g-3">
+                @foreach (var school in FilteredSchools)
+                {
+                    <div class="@(selected == null ? "col-md-6 col-xl-4" : "col-md-6")" @key="school.SchoolId">
+                        <SchoolCard School="school"
+                                    IsSelected="@(selected?.SchoolId == school.SchoolId)"
+                                    OnSelect="HandleSelect" />
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (selected != null)
+        {
+            <div class="col-lg-5 mt-3 mt-lg-0">
+                <SchoolDetails School="selected" OnClose="@(() => selected = null)" />
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<School>? schools;
+    private School? selected;
+    private bool error;
+
+    private string Search { get; set; } = string.Empty;
+
+    private IEnumerable<School> FilteredSchools =>
+        schools is null
+            ? Enumerable.Empty<School>()
+            : schools.Where(s => s.SchoolName.Contains(Search ?? "", StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync() => await LoadSchools();
+
+    private async Task LoadSchools()
+    {
+        error = false;
+        schools = null;
+        try
+        {
+            schools = await SchoolService.GetSchoolsAsync();
+        }
+        catch (Exception)
+        {
+            error = true;
+        }
+    }
+
+    private void HandleSelect(School school) => selected = school;
+}

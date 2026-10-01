@@ -1,0 +1,27 @@
+﻿@using SchoolDirectoryApp.Models
+
+<div class="card h-100 school-card @(IsSelected ? "border-primary" : "")" role="button" @onclick="Select">
+    <div class="card-body">
+        <h5 class="card-title">@School.SchoolName</h5>
+        <p class="card-text text-muted mb-1">@School.Address</p>
+        <p class="card-text mb-1">📞 @School.PhoneNo</p>
+        <p class="card-text mb-1">✉ @School.EmailAddress</p>
+        <p class="card-text small mb-0">
+            <strong>Proprietor:</strong> @School.ProprietorFullName<br />
+            <strong>Head:</strong> @School.HeadFullName
+        </p>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public School School { get; set; } = default!;
+
+    [Parameter]
+    public bool IsSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<School> OnSelect { get; set; }
+
+    private Task Select() => OnSelect.InvokeAsync(School);
+}
